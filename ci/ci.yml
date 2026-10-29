@@ -1,0 +1,52 @@
+# Move this file to .github/workflows/ci.yml. The agent that wrote it cannot push workflow files.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deno:
+    name: Deno (lint, check, unit tests, behaviour script)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: deno fmt --check
+      - run: deno lint
+      - run: deno task check
+      - run: deno task test
+      - run: deno task e2e
+
+  edge-runtime:
+    name: Supabase Edge Runtime (behaviour script)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Serve the function with the Supabase Edge Runtime
+        run: |
+          docker run -d --name edge-runtime --network host \
+            -v "$PWD/supabase/functions:/home/deno/functions:ro" \
+            -e SEND_EMAIL_HOOK_SECRET="v1,whsec_$(printf 'synthetic-hook-secret-for-tests!' | base64)" \
+            -e MAILCHANNELS_API_KEY=synthetic-api-key \
+            -e MAILCHANNELS_FROM_EMAIL=auth@example.com \
+            -e MAILCHANNELS_FROM_NAME="Example App" \
+            -e SUPABASE_URL=https://project-ref.supabase.co \
+            -e MAILCHANNELS_API_URL=http://127.0.0.1:54329/tx/v1/send \
+            ghcr.io/supabase/edge-runtime:v1.77.9 \
+            start --main-service /home/deno/functions/send-email -p 9000
+      - run: deno task e2e
+        env:
+          FUNCTION_URL: http://127.0.0.1:9000/send-email
+      - if: always()
+        run: docker logs edge-runtime

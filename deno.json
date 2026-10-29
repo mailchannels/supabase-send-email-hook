@@ -1,0 +1,13 @@
+{
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "standardwebhooks": "npm:standardwebhooks@1.0.0"
+  },
+  "tasks": {
+    "test": "deno test --allow-env test/handler_test.ts",
+    "e2e": "deno test --allow-net --allow-env --allow-run --allow-read test/e2e_test.ts",
+    "check": "deno check supabase/functions/send-email/index.ts test/"
+  },
+  "fmt": { "lineWidth": 100 },
+  "lint": { "rules": { "exclude": ["no-explicit-any"] } }
+}

@@ -1,0 +1,11 @@
+# Local development settings. Run `supabase start`, then `supabase functions serve --env-file .env`.
+project_id = "supabase-send-email-hook"
+
+[functions.send-email]
+# Supabase Auth authenticates with the hook signature, not a user's JWT.
+verify_jwt = false
+
+[auth.hook.send_email]
+enabled = true
+uri = "http://host.docker.internal:54321/functions/v1/send-email"
+secrets = "env(SEND_EMAIL_HOOK_SECRET)"
