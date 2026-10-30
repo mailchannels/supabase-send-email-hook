@@ -1,4 +1,3 @@
-# Move this file to .github/workflows/ci.yml. The agent that wrote it cannot push workflow files.
 
 name: CI
 

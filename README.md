@@ -75,7 +75,7 @@ deno task e2e    # behaviour script: serves the function with Deno and posts sig
 ```
 
 To run the behaviour script against the Supabase Edge Runtime, start the runtime as in
-[`ci/ci.yml`](ci/ci.yml) (the GitHub Actions workflow, to be moved to `.github/workflows/ci.yml`)
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) (the GitHub Actions workflow, to be moved to `.github/workflows/ci.yml`)
 and run `FUNCTION_URL=http://127.0.0.1:9000/send-email deno task e2e`. CI runs both.
 
 ## License
